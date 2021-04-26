@@ -3,7 +3,7 @@
 virtual: .venv/bin/pip # Creates an isolated python 3 environment
 
 .venv/bin/pip:
-	chmod +x quick_mlp
+	chmod +x speedy_mlp 
 	python3 -m venv env
 
 install:
