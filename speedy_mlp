@@ -1,0 +1,95 @@
+#!/bin/bash
+
+learning_rate="1e-2"
+batch_size="8"
+epochs="100"
+testing_fraction="0.1"
+input_file=""
+output_location="./"
+model_name="mlp-model_$(date +%m-%d-%Y,%H:%M:%S)"
+
+set_learning_rate=false
+set_batch_size=false
+set_epochs=false
+set_testing_fraction=false
+set_input_file=false
+set_output_location=false
+set_model_name=false
+
+rm mlp_script.py 
+
+touch mlp_script.py
+
+cat pytorch_code/template_1 >> mlp_script.py
+echo "" >> mlp_script.py
+
+for var in "$@"
+do
+	if [[ $set_learning_rate == true ]]; then
+		learning_rate=${var}
+		set_learning_rate=false
+
+	elif [[ $set_batch_size == true ]]; then
+		batch_size=${var}
+		set_batch_size=false
+
+	elif [[ $set_epochs == true ]]; then
+		epochs=${var}
+		set_epochs=false
+
+	elif [[ $set_testing_fraction == true ]]; then
+		testing_fraction=${var}
+		set_testing_fraction=false
+
+	elif [[ $set_input_file == true ]]; then
+		input_file=${var}
+		set_input_file=false
+
+	elif [[ $set_model_name == true ]]; then
+		model_name=${var}
+		set_model_name=false
+
+	elif [[ $set_output_location == true ]]; then
+		output_location=${var}
+		set_output_location=false
+
+	elif [[ $var == "-lr" ]]; then
+		set_learning_rate=true
+
+	elif [[ $var == "-bs" ]]; then
+		set_batch_size=true
+
+	elif [[ $var == "-e" ]]; then
+		set_epochs=true
+
+	elif [[ $var == "-tf" ]]; then
+		set_testing_fraction=true
+
+	elif [[ $var == "-i" ]]; then
+		set_input_file=true
+
+	elif [[ $var == "-n" ]]; then
+		set_model_name=true
+
+	elif [[ $var == "-o" ]]; then
+		set_output_location=true
+
+	elif [[ $var =~ (^[0-9]+),([0-9]+) ]]; then
+		echo "            ${mlp_string}nn.Linear(${BASH_REMATCH[1]}, ${BASH_REMATCH[2]})," >> mlp_script.py 
+	else
+		echo "            ${mlp_string}nn.${var}()," >> mlp_script.py 
+   	fi
+done
+
+cat pytorch_code/template_2 >> mlp_script.py
+
+sed -i '' -e "s/{{LEARNING_RATE}}/${learning_rate}/g" mlp_script.py
+sed -i '' -e "s/{{BATCH_SIZE}}/${batch_size}/g" mlp_script.py
+sed -i '' -e "s/{{EPOCHS}}/${epochs}/g" mlp_script.py
+sed -i '' -e "s/{{TESTING_FRACTION}}/${testing_fraction}/g" mlp_script.py
+
+source env/bin/activate
+python mlp_script.py ${input_file} ${output_location} ${model_name}
+deactivate
+
+rm mlp_script.py

@@ -1,0 +1,60 @@
+import os
+import sys
+import torch
+import random
+from torch import nn
+import matplotlib.pyplot as plt
+import pandas as pd
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+data_points = []
+testing_fraction = {{TESTING_FRACTION}}
+string_data_labels = []
+column_count = 0
+
+output_location=sys.argv[2]
+model_name=sys.argv[3]
+
+if output_location != "" and output_location[-1] != "/":
+    output_location += "/"
+
+with open(sys.argv[1], 'r') as csv_in:
+    line_number = 1
+
+    for line in csv_in: 
+        
+        line = line.rstrip()
+
+        if line_number == 1:
+            data_labels = line.split(",")
+            column_count = len(data_labels)
+            line_number += 1
+            continue 
+
+        data_point = [0 for x in range(column_count)]
+        columns = line.split(",")
+
+        if len(columns) != column_count:
+            continue
+
+        for i in range(0, column_count):
+            data_value = columns[i]
+
+            if i < column_count-1:
+                data_point[i] = float(data_value)
+
+            else:
+                if data_value not in string_data_labels:
+                    string_data_labels.append(data_value)
+
+                data_point[i] = string_data_labels.index(data_value)
+
+        data_points.append(data_point)
+
+class MLP(nn.Module):
+    def __init__(self):
+        super(MLP, self).__init__()
+        self.flatten = nn.Flatten()
+
+        self.stack = nn.Sequential(

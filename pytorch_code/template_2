@@ -1,0 +1,64 @@
+        )
+
+    def forward(self, x):
+        output = self.stack(x)
+        return output
+
+testing_indices = (torch.rand(int(testing_fraction * len(data_points))) * len(data_points)).type(torch.int32).tolist()
+
+testing_set = torch.tensor([x for ind, x in enumerate(data_points) if ind in testing_indices]).type(torch.float32)
+training_set = torch.tensor([x for ind, x in enumerate(data_points) if ind not in testing_indices]).type(torch.float32)
+
+testing_samples = torch.tensor([x for ind, x in enumerate(data_points) if ind in testing_indices]).type(torch.float32)
+testing_labels = testing_samples[:,-1].type(torch.int64)
+testing_samples = testing_samples[:,0:-1].type(torch.float32)
+
+learning_rate = {{LEARNING_RATE}} 
+
+classifier = MLP()
+optimizer = torch.optim.Adam(classifier.parameters(), lr=learning_rate)
+loss = nn.CrossEntropyLoss()
+batch_size = {{BATCH_SIZE}} 
+
+epochs = {{EPOCHS}} 
+epoch_loops = int(len(training_set) / batch_size)
+
+epoch_scores = []
+test_scores = []
+
+for i in range(epochs):
+    epoch_total_out = 0
+
+    for j in range(epoch_loops):
+        X = (torch.rand(batch_size) * len(training_set)).type(torch.int64)
+        X = training_set[X]  
+        Y = X[:,-1].type(torch.int64)
+        X = X[:,:-1].type(torch.float32)
+        X = classifier(X)
+
+        optimizer.zero_grad()
+        out = loss(X, Y)
+        out.backward()
+        optimizer.step()
+
+
+        epoch_total_out += out.item()
+
+    X = classifier(testing_samples)
+    out = loss(X, testing_labels)
+    test_scores.append(out.item())
+    epoch_scores.append(epoch_total_out / epoch_loops)
+
+# Data
+df=pd.DataFrame({'x_values': range(1,len(epoch_scores)+1), 'y1_values': epoch_scores, 'y2_values': test_scores})
+ 
+# multiple line plots
+plt.xlabel('Epoch')
+plt.ylabel('Error')
+plt.plot( 'x_values', 'y1_values', data=df, marker='', color='skyblue', linewidth=2, label='Training Loss')
+plt.plot( 'x_values', 'y2_values', data=df, marker='', color='orange', linewidth=2, label='Testing Loss')
+# show legend
+plt.legend()
+
+plt.savefig(output_location + model_name + '.png')
+torch.save(classifier, output_location + model_name + ".model")
