@@ -33,7 +33,7 @@ After the parameter flags, the user must specify the MLP architecture.
 
 An argument structured as `[x,y]` (where `x` and `y` are integers) indicates a linear transformation between a layer of `x` features to a layer of `y` features. 
 
-At any point in the structure, any LEGITIMATE activation function from the <a href=https://pytorch.org/docs/stable/nn.html#non-linear-activations-weighted-sum-nonlinearity> torch.nn library</a>.
+At any point in the structure, any legal activation function from the <a href=https://pytorch.org/docs/stable/nn.html#non-linear-activations-weighted-sum-nonlinearity> torch.nn library</a>.
 
 There are several constraints inherent to any neural network architecture that apply here:
 
