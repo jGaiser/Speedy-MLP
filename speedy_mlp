@@ -16,8 +16,6 @@ set_input_file=false
 set_output_location=false
 set_model_name=false
 
-rm mlp_script.py 
-
 touch mlp_script.py
 
 cat pytorch_code/template_1 >> mlp_script.py
@@ -88,8 +86,12 @@ sed -i '' -e "s/{{BATCH_SIZE}}/${batch_size}/g" mlp_script.py
 sed -i '' -e "s/{{EPOCHS}}/${epochs}/g" mlp_script.py
 sed -i '' -e "s/{{TESTING_FRACTION}}/${testing_fraction}/g" mlp_script.py
 
+echo "Training MLP"
+
 source env/bin/activate
 python mlp_script.py ${input_file} ${output_location} ${model_name}
 deactivate
+
+echo "MLP training complete"
 
 rm mlp_script.py
