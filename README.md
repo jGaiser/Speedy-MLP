@@ -42,9 +42,15 @@ There are several constraints inherent to any neural network architecture that a
 
 Of course, layers must be defined in a logical fashion, consistent with any neural network architecture: 
 
-	1. The first parameter of the first transformation and last parameter of the last transformation must be equal to the number of features and classes, respectively (The iris dataset has 4 unique features, and there are 3 different classes of iris). 
+	1. The first parameter of the first transformation and last
+	   parameter of the last transformation must be equal
+	   to the number of features and classes, respectively
+	   (The iris dataset has 4 unique features, and there are 3
+	   different classes of iris). 
 		  
-	2. The second parameter of a transformation must agree with the first parameter of the next transformation. (e.g. [4,8 8,3] is valid [4,8 5,3] is not)
+	2. The second parameter of a transformation must agree with the
+	   first parameter of the next transformation.
+	   (e.g. [4,8 8,3] is valid [4,8 5,3] is not)
 
 There are a handful of additional flags that may be used to adjust hyper-parameters and set output locations:
 
